@@ -1,0 +1,32 @@
+.result_table {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.result_item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+}
+
+.result_item:nth-child(odd) {
+    background-color: whitesmoke;
+  }
+  
+.result_item:nth-child(even) {
+    background-color: lightgray;
+  }
+
+.result_title, .result_value {
+    display: flex;
+    /*align-items: center;*/
+    justify-content: center;
+    text-align: center;
+}
+
+.result_title {
+    font-weight: bold;
+}
