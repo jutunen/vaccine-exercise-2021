@@ -43,6 +43,7 @@ function App() {
       <MainComponent />
       <MainComponent />
       <MainComponent />
+      <MainComponent />
     </div>
 
   );

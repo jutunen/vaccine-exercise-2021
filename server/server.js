@@ -41,9 +41,11 @@ app.get("/test", async (req, res, next) => {
     };
 
     try {
-        results.usedVaccines = await getUsedVaccinesCount(knex, datetime);
         results.arrivedOrders = await getArrivedOrdersCount(knex, datetime);
-        results.arrivedVaccines = await getArrivedVaccinesCount(knex, datetime);
+        const arrivedVaccines = await getArrivedVaccinesCount(knex, datetime);
+        results.arrivedVaccines = arrivedVaccines;
+        const usedVaccines = await getUsedVaccinesCount(knex, datetime);
+        results.usedVaccines = usedVaccines;
         results.arrivedOrdersPerProducer[vaccineBrands[0]] = await getArrivedOrdersCountPerProducer(knex, datetime, vaccineBrands[0]);
         results.arrivedOrdersPerProducer[vaccineBrands[1]] = await getArrivedOrdersCountPerProducer(knex, datetime, vaccineBrands[1]);
         results.arrivedOrdersPerProducer[vaccineBrands[2]] = await getArrivedOrdersCountPerProducer(knex, datetime, vaccineBrands[2]);
@@ -53,13 +55,18 @@ app.get("/test", async (req, res, next) => {
         results.expiredBottles = await getExpiredBottlesCount(knex, datetime);
         const vaccinesGivenFromExpiredBottles = await getExpiredBottlesGivenVaccinesCount(knex, datetime);
         const totalVaccinesInExpiredBottles = await getExpiredBottlesTotalVaccinesCount(knex, datetime);
-        results.vaccinesExpiredBeforeUsage = totalVaccinesInExpiredBottles - vaccinesGivenFromExpiredBottles;
-        const vaccinesGivenFromValidBottles = await getValidBottlesGivenVaccinesCount(knex, datetime);
-        console.log("vaccinesGivenFromValidBottles: " + vaccinesGivenFromValidBottles);
-        const totalVaccinesInValidBottles = await getValidBottlesTotalVaccinesCount(knex, datetime);
-        console.log("totalVaccinesInValidBottles: " + totalVaccinesInValidBottles);
-        results.validVaccinesLeft = totalVaccinesInValidBottles - vaccinesGivenFromValidBottles;
-        results.vaccinesExpiringInNext10days = await getExpiringVaccinesCount(knex, datetime, 10);
+        const vaccinesExpiredBeforeUsage = totalVaccinesInExpiredBottles - vaccinesGivenFromExpiredBottles;
+        results.vaccinesExpiredBeforeUsage = vaccinesExpiredBeforeUsage;
+        results.validVaccinesLeft = arrivedVaccines - usedVaccines - vaccinesExpiredBeforeUsage;
+
+        const periodInDays = 10;
+        const dateCondition = `expired >= '${datetime}' and expired <= ('${datetime}'::timestamp + '${periodInDays} days'::interval)`;
+
+        const vaccinesExpiringInNext10daysTotal = await getExpiringVaccinesTotalCount(knex, dateCondition);
+        const usedVaccinesFromBottlesExpiringInNext10days = await getExpiringBottlesUsedVaccinesCount(knex, dateCondition);
+        //console.log("vaccinesExpiringInNext10daysTotal: " + vaccinesExpiringInNext10daysTotal);
+        //console.log("usedVaccinesFromBottlesExpiringInNext10days: " + usedVaccinesFromBottlesExpiringInNext10days);
+        results.vaccinesExpiringInNext10days = vaccinesExpiringInNext10daysTotal - usedVaccinesFromBottlesExpiringInNext10days;
     } catch (error) {
         return next(error);
     }
@@ -87,7 +94,14 @@ const getArrivedOrdersCount = async (knex, datetime) => {
 
 // 3. How many vaccines have arrived total
 const getArrivedVaccinesCount = async (knex, datetime) => {
-    let result = await knex.raw(`select sum(injections) as injections_count from bottle where arrived <= '${datetime}';`);
+
+    let result = await knex.raw(`select count(*) from bottle where arrived <= '${datetime}';`);
+
+    if(result.rows[0].count == 0) {
+        return 0;
+    }
+
+    result = await knex.raw(`select sum(injections) as injections_count from bottle where arrived <= '${datetime}';`);
     return result.rows[0].injections_count;
 }
 
@@ -99,7 +113,14 @@ const getArrivedOrdersCountPerProducer = async (knex, datetime, vaccineBrand) =>
 
 // 5. How many vaccines per producer?
 const getArrivedVaccinesCountPerProducer = async (knex, datetime, vaccineBrand) => {
-    let result = await knex.raw(`select sum(injections) as injections_count from bottle where arrived <= '${datetime}' and vaccine = '${vaccineBrand}';`);
+
+    let result = await knex.raw(`select count(*) from bottle where arrived <= '${datetime}' and vaccine = '${vaccineBrand}';`);
+
+    if(result.rows[0].count == 0) {
+        return 0;
+    }
+    
+    result = await knex.raw(`select sum(injections) as injections_count from bottle where arrived <= '${datetime}' and vaccine = '${vaccineBrand}';`);
     return result.rows[0].injections_count;
 }
 
@@ -123,38 +144,29 @@ const getExpiredBottlesTotalVaccinesCount = async (knex, datetime) => {
     return result.rows[0].injections_count;;
 }
 
-// 8. How many vaccines are left to use?
+// 8.1 How many total vaccine doses are in the bottles that are going to expire in the next 10 days
+const getExpiringVaccinesTotalCount = async (knex, dateCondition) => {
 
-// 8.1 How many vaccines have been given from the bottles, that have not expired by the given day
-const getValidBottlesGivenVaccinesCount = async (knex, datetime) => {
-    let result = await knex.raw(`select count(*) from vaccination where vaccination.bottle in (select id from bottle where expired > '${datetime}');`);
-    return result.rows[0].count;
-}
-
-// 8.2 How many vaccines has been in the bottles, that have not expired by the given day
-const getValidBottlesTotalVaccinesCount = async (knex, datetime) => {
-    let result = await knex.raw(`select sum(injections) as injections_count from bottle where expired > '${datetime}';`);
-    return result.rows[0].injections_count;
-}
-
-// 9. How many vaccines are going to expire in the next 10 days
-const getExpiringVaccinesCount = async (knex, datetime, periodInDays) => {
-
-    let result = await knex.raw(`select count(*) from bottle where expired >= '${datetime}' and expired <= ('${datetime}'::timestamp + '${periodInDays} days'::interval);`);
-
-    //console.log("result.rows[0]");
-    //console.log(JSON.stringify(result.rows[0]));
+    let result = await knex.raw(`select count(*) from bottle where ${dateCondition};`);
 
     if(result.rows[0].count == 0 ) {
         return 0;
     }
     
-    result = await knex.raw(`select sum(injections) as injections_count from bottle where expired >= '${datetime}' and expired <= ('${datetime}'::timestamp + '${periodInDays} days'::interval);`);
+    result = await knex.raw(`select sum(injections) as injections_count from bottle where ${dateCondition};`);
     return result.rows[0].injections_count;
 }
 
+// 8.2 How many vaccines have been used from the bottles that are going to expire in the next 10 days
+const getExpiringBottlesUsedVaccinesCount = async (knex, dateCondition) => {
 
+    let result = await knex.raw(`select count(*) from bottle where ${dateCondition};`);
 
-
-
+    if(result.rows[0].count == 0 ) {
+        return 0;
+    }
+    
+    result = await knex.raw(`select count(*) from vaccination where vaccination.bottle in (select id from bottle where ${dateCondition});`);
+    return result.rows[0].count;
+}
 
