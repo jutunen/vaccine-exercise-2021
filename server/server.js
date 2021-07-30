@@ -32,7 +32,7 @@ app.get("/test", async (req, res, next) => {
     }
 
     // convert dateString to Postgres date format:
-    const datetime = dateString.replace('T',' ').replace('Z','');
+    const datetime = dateString.replace('T',' ').replace('Z',' z');
     console.log("datetime: " + datetime);
 
     let results = {

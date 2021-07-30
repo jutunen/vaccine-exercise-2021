@@ -4,8 +4,44 @@ div#main_container {
     height: 100vh;
     margin: auto;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-image: linear-gradient(white,lightblue,white);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+div#controls_container {
+    display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
-    background-image: linear-gradient(white,lightblue,white);
+    height: 100px;
   }
+
+div#components_container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+div.info_component {
+    display:flex;
+    flex-direction: column;
+}
+
+div.info_sub_controls {
+  display: flex;
+  flex-direction: row;
+}
+
+div.info_controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.date_picker {
+  width: 150px;
+}
