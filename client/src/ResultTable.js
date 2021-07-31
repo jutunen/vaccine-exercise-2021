@@ -11,7 +11,7 @@ export function ResultTable({ results }) {
     <div className="result_table">
       <div className="result_item">
         <div className="result_title">
-          Orders arrived:
+          Bottles arrived:
         </div>
         <div className="result_value">
           {results.arrivedOrders}
@@ -41,7 +41,7 @@ export function ResultTable({ results }) {
           Antiqua arrivals:
         </div>
         <div className="result_value">
-          {results.arrivedOrdersPerProducer.Antiqua} orders <br />
+          {results.arrivedOrdersPerProducer.Antiqua} bottles <br />
           {results.arrivedVaccinesPerProducer.Antiqua} vaccines
         </div>
       </div>
@@ -51,7 +51,7 @@ export function ResultTable({ results }) {
           SolarBuddhica arrivals:
         </div>
         <div className="result_value">
-          {results.arrivedOrdersPerProducer.SolarBuddhica} orders <br />
+          {results.arrivedOrdersPerProducer.SolarBuddhica} bottles <br />
           {results.arrivedVaccinesPerProducer.SolarBuddhica} vaccines
         </div>
       </div>
@@ -61,7 +61,7 @@ export function ResultTable({ results }) {
           Zerpfy arrivals:
         </div>
         <div className="result_value">
-          {results.arrivedOrdersPerProducer.Zerpfy} orders <br />
+          {results.arrivedOrdersPerProducer.Zerpfy} bottles <br />
           {results.arrivedVaccinesPerProducer.Zerpfy} vaccines
         </div>
       </div>

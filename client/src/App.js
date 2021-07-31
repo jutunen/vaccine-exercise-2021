@@ -7,36 +7,9 @@ import { registerLocale, setDefaultLocale } from "react-datepicker";
 import fi from 'date-fns/locale/fi';
 import { ResultTable } from "./ResultTable.js";
 import delButtonPng from './delete-button.png';
+import cloneDeep from 'lodash.clonedeep';
 
-const initDate = '2021-01-02T10:00:00Z';
-
-async function getVaccineDataByDate(date, setJsonData, setStartDate) {
-
-  console.log(date.toISOString());
-
-  if (setStartDate) {
-    setStartDate(date);
-  }
-
-  const encodedDate = encodeURIComponent(date.toISOString());
-  //const encodedDate = encodeURIComponent('perseensuti');
-
-  //setRequestIsPending(true);
-  try {
-    const result = await axios.get(`http://localhost:5555/test?date=${encodedDate}`,
-      {
-        timeout: 10000
-      });
-    console.log(result.data);
-    setJsonData(JSON.stringify(result.data));
-  } catch (err) {
-    console.error(err);
-    //alert("Data fetching failed.\nPlease try again later.");
-    //setRequestIsPending(false);
-  }
-  //setRequestIsPending(false);
-
-}
+const initDateGlobal = '2021-01-02T10:00:00Z';
 
 function App() {
 
@@ -45,20 +18,39 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getVaccineDataByDate(new Date(initDate), setJsonData);
+    async function getInitData() {
+      let initData = await getVaccineDataByDate(new Date(initDateGlobal));
+      //console.log("initData: ", initData);
+      setDataArray([{ id: 0, data: initData, dateStr: initDateGlobal }])
+    }
+    getInitData();
   }, []);
 
-  const [idArray, setIdArray] = useState([0]);
-  const [jsonData, setJsonData] = useState("{}");
+  const [dataArray, setDataArray] = useState([]);
 
   const removeHandler = (idToBeRemoved) => {
-    if (idArray.length > 1) {
-      setIdArray(idArray.filter(id => id !== idToBeRemoved));
+
+    let test = dataArray.filter(item => item.id !== idToBeRemoved);
+    console.log(test);
+
+    if (dataArray.length > 1) {
+      setDataArray(dataArray.filter(item => item.id !== idToBeRemoved));
     }
   }
 
+  const duplicatingHandler = (date,data,index) => {
+    console.log("duplicatingHandler:");
+    console.log(date);
+    console.log(data);
+    console.log(index);
+    let arrayClone = cloneDeep(dataArray);
+    arrayClone.push({id: getFreeId(), data, dateStr: date});
+    setDataArray(arrayClone);
+  }
+
   const getFreeId = () => {
-    //console.log("idArray.length: ", idArray.length);
+    //console.log("dataArray.length: ", dataArray.length);
+    let idArray = dataArray.map(item => item.id);
     for (let id = 0; id < idArray.length + 1; id++) {
       //console.log("id: ", id)
       if (!idArray.includes(id)) {
@@ -69,27 +61,29 @@ function App() {
     return -1;
   }
 
-  //console.log(JSON.stringify(idArray));
+  //console.log(JSON.stringify(dataArray));
+  let index = 0;
 
   return (
     <div id="main_container">
       <div id="controls_container">
-        <button type="button" onClick={() => setIdArray([...idArray, getFreeId()])}>
-          Add table
-        </button>
       </div>
       <div id="components_container">
-        {idArray.map(id => <InfoComponent removable={idArray.length > 1} id={id} key={id} removeHandler={removeHandler} initData={jsonData} />)}
+        {dataArray.map(item => <InfoComponent duplicatingHandler={duplicatingHandler} removable={dataArray.length > 1} id={item.id} key={item.id} removeHandler={removeHandler} initData={item.data} initDateStr={item.dateStr} index={index++} />)}
       </div>
     </div>
 
   );
 }
 
-function InfoComponent({ id, removeHandler, initData, removable }) {
+function InfoComponent({ id, removeHandler, initData, removable, duplicatingHandler, initDateStr, index }) {
 
-  const [startDate, setStartDate] = useState(new Date(initDate));
-  const [jsonData, setJsonData] = useState(null);
+  //console.log("id: ", id);
+  //console.log("initData: ", initData);
+  //console.log("initDate: ", initDate);
+
+  const [startDate, setStartDate] = useState(new Date(initDateStr));
+  const [vaxData, setVaxData] = useState(null);
 
   //console.log("initData: ", initData);
 
@@ -97,6 +91,9 @@ function InfoComponent({ id, removeHandler, initData, removable }) {
     <div className="info_component">
       <div className="info_controls">
         <div className="info_sub_controls">
+          <button type="button" onClick={() => duplicatingHandler(startDate.toISOString(), !vaxData ? initData : vaxData, index)}>
+            Duplicate this
+          </button>
           {removable &&
             <input type='image' src={delButtonPng} alt='Remove' height='25' width='25' onClick={() => removeHandler(id)} onMouseEnter={() => { }} onMouseLeave={() => { }} />
           }
@@ -104,7 +101,7 @@ function InfoComponent({ id, removeHandler, initData, removable }) {
         Select date and time:
         <DatePicker
           selected={startDate}
-          onChange={(date) => getVaccineDataByDate(date, setJsonData, setStartDate)}
+          onChange={(date) => getVaccineDataByDate(date, setVaxData, setStartDate)}
           showTimeSelect
           timeIntervals={30}
           dateFormat="dd.MM.yyyy HH:mm"
@@ -117,9 +114,43 @@ function InfoComponent({ id, removeHandler, initData, removable }) {
           <div style={{ marginLeft: "5px", fontSize: "12px" }}>Calendar times are Finnish time.</div>
         </DatePicker>
       </div>
-      <ResultTable results={!jsonData ? JSON.parse(initData) : JSON.parse(jsonData)} />
+      <ResultTable results={!vaxData ? initData : vaxData} />
     </div>
   )
 }
+
+async function getVaccineDataByDate(date, setVaxData, setStartDate) {
+
+  console.log(date.toISOString());
+
+  if (setStartDate) {
+    setStartDate(date);
+  }
+
+  const encodedDate = encodeURIComponent(date.toISOString());
+
+  //setRequestIsPending(true);
+  try {
+    const result = await axios.get(`http://localhost:5555/test?date=${encodedDate}`,
+      {
+        timeout: 10000
+      });
+
+    //console.log(result.data);
+
+    if (setVaxData) {
+      setVaxData(result.data);
+    } else {
+      return result.data;
+    }
+
+  } catch (err) {
+    console.error(err);
+    //alert("Data fetching failed.\nPlease try again later.");
+    //setRequestIsPending(false);
+  }
+  //setRequestIsPending(false);
+}
+
 
 export default App;
