@@ -13,13 +13,14 @@
 
 .result_item:nth-child(odd) {
     background-color: whitesmoke;
-  }
-  
+}
+
 .result_item:nth-child(even) {
     background-color: lightgray;
-  }
+}
 
-.result_title, .result_value {
+.result_title,
+.result_value {
     display: flex;
     /*align-items: center;*/
     justify-content: center;
