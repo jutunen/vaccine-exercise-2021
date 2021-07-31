@@ -8,6 +8,7 @@ import fi from 'date-fns/locale/fi';
 import { ResultTable } from "./ResultTable.js";
 import delButtonPng from './delete-button.png';
 import cloneDeep from 'lodash.clonedeep';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 const initDateGlobal = '2021-01-02T10:00:00Z';
 
@@ -38,13 +39,24 @@ function App() {
     }
   }
 
-  const duplicatingHandler = (date,data,index) => {
+  const duplicatingHandler = (date, data, index) => {
     console.log("duplicatingHandler:");
     console.log(date);
     console.log(data);
     console.log(index);
-    let arrayClone = cloneDeep(dataArray);
-    arrayClone.push({id: getFreeId(), data, dateStr: date});
+
+    let arrayClone = [];
+
+    for (let i = 0, shift = 0; i < dataArray.length; i++) {
+      if (i === index) {
+        arrayClone[i] = cloneDeep(dataArray[i]);
+        arrayClone.push({ id: getFreeId(), data, dateStr: date });
+        shift = 1;
+      } else {
+        arrayClone[i + shift] = cloneDeep(dataArray[i]);
+      }
+    }
+
     setDataArray(arrayClone);
   }
 
@@ -69,7 +81,16 @@ function App() {
       <div id="controls_container">
       </div>
       <div id="components_container">
-        {dataArray.map(item => <InfoComponent duplicatingHandler={duplicatingHandler} removable={dataArray.length > 1} id={item.id} key={item.id} removeHandler={removeHandler} initData={item.data} initDateStr={item.dateStr} index={index++} />)}
+        <TransitionGroup component={null}>
+          {dataArray.map(item => {
+            return (
+              <CSSTransition classNames="event-transition" timeout={200} key={item.id}>
+                <InfoComponent duplicatingHandler={duplicatingHandler} removable={dataArray.length > 1} id={item.id} removeHandler={removeHandler} initData={item.data} initDateStr={item.dateStr} index={index++} />
+              </CSSTransition>              
+            )
+          }
+          )}
+        </TransitionGroup>
       </div>
     </div>
 

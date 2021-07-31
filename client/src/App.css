@@ -45,3 +45,23 @@ div.info_controls {
 .date_picker {
   width: 150px;
 }
+
+.event-transition-enter {
+  transform: scale(0);
+}
+
+.event-transition-enter-active {
+  transform: scale(1);
+  transition: transform 200ms;
+  transition-timing-function: linear;
+}
+
+.event-transition-exit {
+  transform: scale(1);
+}
+
+.event-transition-exit-active {
+  transform: scale(0);
+  transition: transform 200ms;
+  transition-timing-function: linear;
+}
