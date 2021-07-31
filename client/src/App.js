@@ -10,7 +10,9 @@ import delButtonPng from './delete-button.png';
 import cloneDeep from 'lodash.clonedeep';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-const initDateGlobal = '2021-01-02T10:00:00Z';
+const initDateConst = '2021-01-02T10:00:00Z';
+const minDateConst = 1609545600000; // '2021-01-02T00:00:00.000Z'
+const maxDateConst = 1618185600000; // '2021-04-12T00:00:00.000Z'
 
 function App() {
 
@@ -20,9 +22,9 @@ function App() {
 
   useEffect(() => {
     async function getInitData() {
-      let initData = await getVaccineDataByDate(new Date(initDateGlobal));
+      let initData = await getVaccineDataByDate(new Date(initDateConst));
       //console.log("initData: ", initData);
-      setDataArray([{ id: 0, data: initData, dateStr: initDateGlobal }])
+      setDataArray([{ id: 0, data: initData, dateStr: initDateConst }])
     }
     getInitData();
   }, []);
@@ -85,8 +87,8 @@ function App() {
           {dataArray.map(item => {
             return (
               <CSSTransition classNames="event-transition" timeout={200} key={item.id}>
-                <InfoComponent duplicatingHandler={duplicatingHandler} removable={dataArray.length > 1} id={item.id} removeHandler={removeHandler} initData={item.data} initDateStr={item.dateStr} index={index++} />
-              </CSSTransition>              
+                <InfoComponent duplicatingHandler={duplicatingHandler} count={dataArray.length} removable={dataArray.length > 1} id={item.id} removeHandler={removeHandler} initData={item.data} initDateStr={item.dateStr} index={index++} />
+              </CSSTransition>
             )
           }
           )}
@@ -97,7 +99,23 @@ function App() {
   );
 }
 
-function InfoComponent({ id, removeHandler, initData, removable, duplicatingHandler, initDateStr, index }) {
+function TimeController({ label, shift, changeHandler }) {
+  return (
+    <div className="time_controller">
+      <button type="button" className="time_adjust_button" onClick={() => changeHandler(shift * (-1))}>
+        -
+      </button>
+      <div className="time_label">
+        {label}
+      </div>
+      <button type="button" className="time_adjust_button" onClick={() => changeHandler(shift)}>
+        +
+      </button>
+    </div>
+  )
+}
+
+function InfoComponent({ id, removeHandler, initData, removable, duplicatingHandler, initDateStr, index, count }) {
 
   //console.log("id: ", id);
   //console.log("initData: ", initData);
@@ -106,18 +124,30 @@ function InfoComponent({ id, removeHandler, initData, removable, duplicatingHand
   const [startDate, setStartDate] = useState(new Date(initDateStr));
   const [vaxData, setVaxData] = useState(null);
 
+  const updateTime = (timeChangeInMs) => {
+    let newTime = startDate.getTime() + timeChangeInMs;
+    if (newTime < minDateConst || newTime > maxDateConst) {
+      return;
+    }
+    getVaccineDataByDate(new Date(newTime), setVaxData, setStartDate);
+  }
+
   //console.log("initData: ", initData);
 
   return (
     <div className="info_component">
       <div className="info_controls">
         <div className="info_sub_controls">
-          <button type="button" onClick={() => duplicatingHandler(startDate.toISOString(), !vaxData ? initData : vaxData, index)}>
-            Duplicate this
-          </button>
-          {removable &&
-            <input type='image' src={delButtonPng} alt='Remove' height='25' width='25' onClick={() => removeHandler(id)} onMouseEnter={() => { }} onMouseLeave={() => { }} />
-          }
+          <div className="info_sub_sub_controls">
+            <button style={{ visibility: count < 5 ? 'visible' : 'hidden' }} type="button" onClick={() => duplicatingHandler(startDate.toISOString(), !vaxData ? initData : vaxData, index)}>
+              Duplicate this
+            </button>
+            <input style={{ visibility: removable ? 'visible' : 'hidden' }} type='image' src={delButtonPng} alt='Remove' height='25' width='25' onClick={() => removeHandler(id)} onMouseEnter={() => { }} onMouseLeave={() => { }} />
+          </div>
+          Adjust date and time:
+          <TimeController label="week" shift={7 * 24 * 3.6e6} changeHandler={updateTime} />
+          <TimeController label="day" shift={24 * 3.6e6} changeHandler={updateTime} />
+          <TimeController label="hour" shift={3.6e6} changeHandler={updateTime} />
         </div>
         Select date and time:
         <DatePicker
@@ -126,8 +156,8 @@ function InfoComponent({ id, removeHandler, initData, removable, duplicatingHand
           showTimeSelect
           timeIntervals={30}
           dateFormat="dd.MM.yyyy HH:mm"
-          minDate={new Date('2021-01-02')}
-          maxDate={new Date('2021-04-12')}
+          minDate={new Date(minDateConst)}
+          maxDate={new Date(maxDateConst)}
           className="date_picker"
           locale={fi}
           calendarStartDay={1}
@@ -157,7 +187,7 @@ async function getVaccineDataByDate(date, setVaxData, setStartDate) {
         timeout: 10000
       });
 
-    //console.log(result.data);
+    console.log(result);
 
     if (setVaxData) {
       setVaxData(result.data);
