@@ -43,6 +43,7 @@ export function InfoComponent({
 }) {
     const [startDate, setStartDate] = useState(new Date(initDateStr));
     const [vaxData, setVaxData] = useState(null);
+    const [highLightColor, setHighLightColor] = useState(null);
 
     const updateTime = timeChangeInMs => {
         let newTime = startDate.getTime() + timeChangeInMs;
@@ -55,11 +56,19 @@ export function InfoComponent({
     //console.log("initData: ", initData);
 
     return (
-        <div className="info_component">
+        <div
+            className="info_component"
+            style={{
+                border: highLightColor
+                    ? `2px solid ${highLightColor}`
+                    : "2px solid transparent",
+            }}
+        >
             <div className="info_controls">
                 <div className="info_sub_controls">
                     <div className="info_sub_sub_controls">
                         <button
+                            className="top_inputs"
                             style={{
                                 visibility:
                                     count < maxNumberOfComponents
@@ -78,6 +87,7 @@ export function InfoComponent({
                             Duplicate
                         </button>
                         <input
+                            className="top_inputs"
                             style={{
                                 visibility: removable ? "visible" : "hidden",
                             }}
@@ -87,8 +97,10 @@ export function InfoComponent({
                             height="25"
                             width="25"
                             onClick={() => removeHandler(id)}
-                            onMouseEnter={() => {}}
-                            onMouseLeave={() => {}}
+                            onMouseEnter={() => setHighLightColor("red")}
+                            onMouseLeave={() => setHighLightColor(null)}
+                            onFocus={() => setHighLightColor("red")}
+                            onBlur={() => setHighLightColor(null)}
                         />
                     </div>
                     Adjust date and time:
@@ -108,25 +120,32 @@ export function InfoComponent({
                         changeHandler={updateTime}
                     />
                 </div>
-                Select date and time:
-                <DatePicker
-                    selected={startDate}
-                    onChange={date =>
-                        getFunction(date, setVaxData, setStartDate)
-                    }
-                    showTimeSelect
-                    timeIntervals={30}
-                    dateFormat="dd.MM.yyyy HH:mm"
-                    minDate={new Date(minDateConst)}
-                    maxDate={new Date(maxDateConst)}
-                    className="date_picker"
-                    locale={fi}
-                    calendarStartDay={1}
-                >
-                    <div style={{ marginLeft: "5px", fontSize: "12px" }}>
-                        Calendar times are Finnish time.
+                <div className="calendar_section">
+                    <div className="calendar_heading">
+                        Selected date and time:
                     </div>
-                </DatePicker>
+                    <DatePicker
+                        selected={startDate}
+                        onChange={date =>
+                            getFunction(date, setVaxData, setStartDate)
+                        }
+                        showTimeSelect
+                        timeIntervals={30}
+                        dateFormat="dd.MM.yyyy HH:mm"
+                        minDate={new Date(minDateConst)}
+                        maxDate={new Date(maxDateConst)}
+                        className="date_picker"
+                        locale={fi}
+                        calendarStartDay={1}
+                    >
+                        <div style={{ marginLeft: "5px", fontSize: "12px" }}>
+                            Calendar times are Finnish time.
+                        </div>
+                    </DatePicker>
+                    <span className="calendar_sub_heading">
+                        ( click to adjust )
+                    </span>
+                </div>
             </div>
             <ResultTable results={!vaxData ? initData : vaxData} />
         </div>

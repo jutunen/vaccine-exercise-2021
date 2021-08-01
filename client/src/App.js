@@ -2,7 +2,7 @@ import "./App.css";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import { useState, useEffect } from "react";
-import { registerLocale  } from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 import fi from "date-fns/locale/fi";
 import { InfoComponent, ProgressIndicator } from "./Components.js";
 import cloneDeep from "lodash.clonedeep";
@@ -97,7 +97,11 @@ function App() {
     return (
         <div id="main_container">
             <div id="heading">
-              <div>List of interesting things aka Solita vaccine exercise 2021. Click <span style={{fontStyle:'italic'}}>duplicate</span> button to compare two or more dates!</div>
+                <div>
+                    List of interesting things aka Solita vaccine exercise 2021 by  <a href="https://github.com/jutunen">jutunen</a>.<br/>
+                    Click <span style={{ fontStyle: "italic" }}>duplicate</span>{" "}
+                    button to compare two or more dates!
+                </div>
             </div>
             <div id="components_container">
                 <TransitionGroup component={null}>
