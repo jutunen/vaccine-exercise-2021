@@ -4,7 +4,7 @@
 These instructions assume Linux environment with Nodejs runtime installed.
 
 ### 1. Install PostgreSQL to your local environment
-Create database and user with password.
+Then create database and user with password.
 
 ### 2. Clone this project to your local environment
 
