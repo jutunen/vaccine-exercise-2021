@@ -21,7 +21,7 @@
     height: 30px;
     padding-top: 10px;
     padding-bottom: 10px;
-    font-size: 16px;
+    font-size: 18px;
 }
 
 #components_container {
@@ -30,48 +30,6 @@
     align-items: flex-start;
     justify-content: center;
     height: calc(100vh-30px);
-}
-
-.info_component {
-    display: flex;
-    flex-direction: column;
-    width: 200px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.info_sub_controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.info_sub_sub_controls {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.info_controls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 90%;
-    background-color: white;
-    /*
-  padding-top: 5px;
-  padding-bottom: 5px;
-  */
-    padding: 5%;
-}
-
-.date_picker {
-    width: 150px;
 }
 
 .event-transition-enter {
@@ -92,30 +50,4 @@
     transform: scale(0);
     transition: transform 200ms;
     transition-timing-function: linear;
-}
-
-.time_controller {
-    display: flex;
-    flex-direction: row;
-    width: 65%;
-    height: 30px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-}
-
-.time_adjust_button {
-    width: 30px;
-    height: 30px;
-    font-size: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.time_label {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
 }

@@ -1,0 +1,95 @@
+.info_component {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.info_sub_controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.info_sub_sub_controls {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.info_controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    background-color: white;
+    padding: 5%;
+}
+
+.date_picker {
+    width: 150px;
+}
+
+.time_controller {
+    display: flex;
+    flex-direction: row;
+    width: 65%;
+    height: 30px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.time_adjust_button {
+    width: 30px;
+    height: 30px;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time_label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+}
+
+.result_table {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+
+.result_item {
+    display: flex;
+    flex-direction: column;
+    width: 190px;
+    padding: 5px;
+}
+
+.result_item:nth-child(odd) {
+    background-color: whitesmoke;
+}
+
+.result_item:nth-child(even) {
+    background-color: lightgray;
+}
+
+.result_title,
+.result_value {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.result_title {
+    font-weight: bold;
+}
