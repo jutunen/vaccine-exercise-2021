@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("./server.js");
+const app = require("./app.js");
 
 let promises = [];
 
@@ -7,13 +7,13 @@ promises[0] = request(app)
     .get("/")
     .expect(404)
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[1] = request(app)
     .get("/vaccine")
     .expect(400)
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[2] = request(app)
     .get("/vaccine?date=2021-01-02T10%3A00%3A00.000Z")
@@ -37,7 +37,7 @@ promises[2] = request(app)
         vaccinesExpiringInNext10days: 0,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[3] = request(app)
     .get("/vaccine?date=2021-01-09T10%3A00%3A00.000Z")
@@ -61,7 +61,7 @@ promises[3] = request(app)
         vaccinesExpiringInNext10days: 0,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[4] = request(app)
     .get("/vaccine?date=2021-01-19T10%3A00%3A00.000Z")
@@ -85,7 +85,7 @@ promises[4] = request(app)
         vaccinesExpiringInNext10days: 0,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[5] = request(app)
     .get("/vaccine?date=2021-02-06T10%3A00%3A00.000Z")
@@ -109,7 +109,7 @@ promises[5] = request(app)
         vaccinesExpiringInNext10days: 1737,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[6] = request(app)
     .get("/vaccine?date=2021-02-20T10%3A00%3A00.000Z")
@@ -133,7 +133,7 @@ promises[6] = request(app)
         vaccinesExpiringInNext10days: 1762,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[7] = request(app)
     .get("/vaccine?date=2021-03-06T10%3A00%3A00.000Z")
@@ -157,7 +157,7 @@ promises[7] = request(app)
         vaccinesExpiringInNext10days: 1778,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[8] = request(app)
     .get("/vaccine?date=2021-03-27T10%3A00%3A00.000Z")
@@ -181,7 +181,7 @@ promises[8] = request(app)
         vaccinesExpiringInNext10days: 1769,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
 promises[9] = request(app)
     .get("/vaccine?date=2021-04-12T20%3A00%3A00.000Z")
@@ -205,6 +205,15 @@ promises[9] = request(app)
         vaccinesExpiringInNext10days: 1960,
     })
     .then(() => "Test passed!")
-    .catch(err => console.log(err));
+    .catch((err) => err);
 
-Promise.all(promises).then(values => console.log(JSON.stringify(values))).then(() => process.exit(0));
+Promise.all(promises)
+    .then(values => {
+        console.log(values);
+        if (values.some(value => value !== "Test passed!")) {
+            console.log("All tests were NOT passed!");
+        } else {
+            console.log("All tests passed!");
+        }
+    })
+    .then(() => process.exit(0));
