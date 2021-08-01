@@ -9,6 +9,8 @@ import cloneDeep from "lodash.clonedeep";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const initDateConst = "2021-01-02T10:00:00Z";
+const serverUrl = "http://localhost:5555";
+//const serverUrl = "http://135.181.40.67:5555";
 
 function App() {
     useEffect(() => {
@@ -28,7 +30,6 @@ function App() {
     const [requestIsPending, setRequestIsPending] = useState(false);
 
     const getVaccineDataByDate = async (date, setVaxData, setStartDate) => {
-        //console.log(date.toISOString());
         if (setStartDate) {
             setStartDate(date);
         }
@@ -36,9 +37,11 @@ function App() {
         const encodedDate = encodeURIComponent(date.toISOString());
         setRequestIsPending(true);
 
+        console.log(`${serverUrl}/vaccine?date=${encodedDate}`);
+
         try {
             const result = await axios.get(
-                `http://localhost:5555/test?date=${encodedDate}`,
+                `${serverUrl}/vaccine?date=${encodedDate}`,
                 {
                     timeout: 10000,
                 }
