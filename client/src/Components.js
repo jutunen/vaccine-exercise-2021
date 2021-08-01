@@ -53,8 +53,6 @@ export function InfoComponent({
         getFunction(new Date(newTime), setVaxData, setStartDate);
     };
 
-    //console.log("initData: ", initData);
-
     return (
         <div
             className="info_component"
@@ -84,7 +82,7 @@ export function InfoComponent({
                                 )
                             }
                         >
-                            Duplicate
+                            DUPLICATE
                         </button>
                         <input
                             className="top_inputs"

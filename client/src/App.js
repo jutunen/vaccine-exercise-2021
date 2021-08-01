@@ -10,7 +10,6 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const initDateConst = "2021-01-02T10:00:00Z";
 const serverUrl = "http://localhost:5555";
-//const serverUrl = "http://135.181.40.67:5555";
 
 function App() {
     useEffect(() => {
@@ -20,7 +19,6 @@ function App() {
     useEffect(() => {
         async function getInitData() {
             let initData = await getVaccineDataByDate(new Date(initDateConst));
-            //console.log("initData: ", initData);
             setDataArray([{ id: 0, data: initData, dateStr: initDateConst }]);
         }
         getInitData();
@@ -36,8 +34,6 @@ function App() {
 
         const encodedDate = encodeURIComponent(date.toISOString());
         setRequestIsPending(true);
-
-        console.log(`${serverUrl}/vaccine?date=${encodedDate}`);
 
         try {
             const result = await axios.get(
@@ -90,11 +86,8 @@ function App() {
                 return id;
             }
         }
-        console.error("getFreeId");
-        return -1;
     };
 
-    //console.log(JSON.stringify(dataArray));
     let index = 0;
 
     return (
