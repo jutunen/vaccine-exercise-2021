@@ -3,6 +3,8 @@
 ## Setting up the environment
 These instructions assume Linux environment with Nodejs runtime installed.
 
+Development was done with Node version 14.15.0 and Postgres version 13.3.
+
 ### 1. Install PostgreSQL to your local environment
 Then create database and user with password.
 
