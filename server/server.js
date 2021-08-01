@@ -75,6 +75,4 @@ app.get("/vaccine", async (req, res, next) => {
 
 });
 
-console.log("Listening port 5555");
-app.listen(5555);
-
+module.exports = app;
