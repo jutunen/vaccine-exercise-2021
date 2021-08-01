@@ -40,8 +40,11 @@ In *vaccine-exercise-2021/client* directory, execute following commands:
 npm install
 npm start
 ```
-
-
+## Executing server tests
+In *vaccine-exercise-2021/server* directory, execute following command:
+```
+npm test
+```
 
 
 
