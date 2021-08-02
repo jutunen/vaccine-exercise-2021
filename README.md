@@ -1,5 +1,7 @@
 # vaccine-exercise-2021
 
+Live version available here: http://135.181.40.67/vaccine/
+
 ## Setting up the environment
 These instructions assume Linux environment with Nodejs runtime installed.
 
