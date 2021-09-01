@@ -134,7 +134,6 @@ export function InfoComponent({
                         maxDate={new Date(maxDateConst)}
                         className="date_picker"
                         locale={fi}
-                        calendarStartDay={1}
                     >
                         <div style={{ marginLeft: "5px", fontSize: "12px" }}>
                             Calendar times are Finnish time.

@@ -10,6 +10,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 
 const initDateConst = "2021-01-02T10:00:00Z";
 const serverUrl = "http://localhost:5555";
+//const serverUrl = "http://135.181.40.67:5555";
 
 function App() {
     useEffect(() => {
